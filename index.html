@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Art is Change Episode Finder</title>
+<meta name="description" content="Search every episode of the Art is Change podcast by topic, art form, community, place or guest.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#4654A3;--navy:#2F386D;--coral:#F95B3D;--rust:#A63D29;--rust-dark:#531E14;--ink:#000;--grey:#4A4A50;--mist:#EFEEEE;--tag:#E6E8F4;--tag-hover:#CDD1EA;--line:#DAD8D2}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--ink);font-family:Montserrat,sans-serif}
+a{color:var(--rust)}a:hover{color:var(--rust-dark)}
+button{font-family:Montserrat,sans-serif}
+.wrap{max-width:1200px;margin:0 auto}
+header{background:var(--blue);color:#fff;padding:48px 20px 40px}
+.kicker{display:flex;align-items:center;gap:12px;font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase}
+.kicker i{display:inline-block;width:28px;height:4px;background:var(--coral)}
+h1{margin:18px 0 0;font-family:Oswald,sans-serif;font-weight:700;font-size:clamp(34px,5.5vw,68px);line-height:1.05;max-width:900px}
+.lede{margin:16px 0 0;font-size:18px;line-height:1.55;color:var(--tag);max-width:720px}
+.search{margin-top:24px;max-width:860px}
+.search label{display:block;font-weight:600;font-size:14px;color:var(--tag);margin-bottom:8px}
+.box{display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:0 18px;min-height:62px}
+.box input{flex:1;min-width:0;border:0;outline:none;font:500 19px Montserrat,sans-serif;color:var(--ink);background:transparent;min-height:58px}
+.box input::placeholder{color:#6B6B70}
+.box:focus-within{box-shadow:0 0 0 3px var(--coral)}
+.quick{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:18px}
+.quick span{font-size:14px;color:var(--tag)}
+.chip{font:600 14px/1.1 Montserrat,sans-serif;border:1.5px solid var(--ink);background:#fff;color:var(--ink);border-radius:999px;padding:6px 14px;min-height:38px;cursor:pointer}
+.chip:hover{background:var(--mist)}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+header .chip{border-color:#fff}
+main{display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start;padding:36px 20px 72px}
+aside{flex:1 1 260px;max-width:320px;display:flex;flex-direction:column;gap:26px}
+aside h2{margin:0 0 6px;font:600 15px Oswald,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--grey);border-bottom:2px solid var(--ink);padding-bottom:8px}
+.fopt{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;text-align:left;font:500 15px/1.3 Montserrat,sans-serif;color:var(--ink);background:transparent;border:0;border-radius:8px;padding:8px 10px;min-height:40px;cursor:pointer}
+.fopt:hover{background:var(--mist)}
+.fopt.on{background:var(--navy);color:#fff}
+.fopt small{font-size:13px;opacity:.75}
+.showall{font:600 14px Montserrat,sans-serif;color:var(--rust);background:none;border:0;padding:8px 10px;cursor:pointer;text-align:left;text-decoration:underline;text-underline-offset:3px}
+.results{flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:20px}
+.bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px}
+.count{margin:0;font-weight:700;font-size:20px}
+.sort{display:flex;gap:8px;align-items:center;font-size:14px;color:var(--grey)}
+.active{display:flex;flex-direction:column;gap:12px;padding:16px;background:var(--mist);border-radius:12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row b{font-size:14px;margin-right:4px}
+.row .lead{font-size:14px;color:var(--grey)}
+.clear{font:600 14px Montserrat,sans-serif;background:none;border:0;color:var(--ink);text-decoration:underline;cursor:pointer;min-height:38px}
+article{border:1.5px solid var(--ink);border-radius:16px;padding:26px;display:flex;flex-direction:column;gap:16px;background:#fff}
+.meta{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:14px;color:var(--grey)}
+.meta strong{font-weight:800;color:var(--ink)}
+.meta em{font-style:normal;font-weight:600;color:var(--rust)}
+h3{margin:0;font:600 27px/1.2 Oswald,sans-serif}
+.guest{display:flex;gap:14px;align-items:flex-start}
+.av{flex:none;width:44px;height:44px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px}
+.gname{font-weight:700;font-size:17px}
+.gbio{font-size:15.5px;line-height:1.45;color:#3A3A40}
+.more{font:600 14px/1.2 Montserrat,sans-serif;color:var(--rust);background:none;border:0;padding:6px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;text-align:left}
+.summary{margin:0;font-size:17px;line-height:1.65}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{font:500 13px/1.1 Montserrat,sans-serif;background:var(--tag);color:var(--navy);border:0;border-radius:6px;padding:7px 10px;min-height:30px;cursor:pointer}
+.tag:hover{background:var(--tag-hover)}
+.tag.on{background:var(--navy);color:#fff}
+.foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid var(--line);padding-top:16px}
+.places{font-size:14px;color:var(--grey)}
+.listen{display:inline-flex;align-items:center;gap:10px;font:700 15px/1 Montserrat,sans-serif;background:var(--rust);color:#fff;text-decoration:none;border-radius:999px;padding:0 22px;min-height:44px}
+.listen:hover{background:var(--rust-dark);color:#fff}
+.loadmore{align-self:center;font:700 15px Montserrat,sans-serif;background:#fff;color:var(--ink);border:1.5px solid var(--ink);border-radius:999px;padding:0 26px;min-height:46px;cursor:pointer}
+.loadmore:hover{background:var(--mist)}
+.empty{border:1.5px dashed var(--ink);border-radius:16px;padding:40px;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
+.empty p{margin:0;font-weight:700;font-size:20px}
+footer{background:var(--mist);padding:28px 20px}
+footer p{margin:0;font-size:14px;line-height:1.5;color:var(--grey)}
+[hidden]{display:none!important}
+.ftoggle{display:none}
+@media (max-width:760px){.ftoggle{display:inline-flex;align-items:center;justify-content:center;width:100%;font:700 15px Montserrat,sans-serif;background:#fff;border:1.5px solid var(--ink);border-radius:12px;min-height:48px;cursor:pointer}aside{max-width:none}aside.closed{display:none}main{gap:20px}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+:focus-visible{outline:3px solid var(--coral);outline-offset:2px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="kicker"><i></i><span>Art is Change · Episode Finder</span></div>
+    <h1 id="headline">Search every conversation about art and social change</h1>
+    <p class="lede">Find episodes by topic, art form, community, place or guest. Every tag comes from the episode's own show notes and transcript.</p>
+    <div class="search">
+      <label for="q">Search titles, guests, people, organizations and places</label>
+      <div class="box">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="q" type="search" autocomplete="off" placeholder="Try “poetry”, “Minneapolis” or “Liz Lerman”">
+      </div>
+    </div>
+    <div class="quick" id="quick"><span>Popular:</span></div>
+  </div>
+</header>
+<main class="wrap">
+  <button type="button" class="ftoggle" id="ftoggle" aria-expanded="false" aria-controls="facets">Show filters</button>
+  <aside id="facets" class="closed" aria-label="Filters"></aside>
+  <section class="results" aria-label="Results">
+    <div class="bar">
+      <p class="count" id="count" aria-live="polite">Loading episodes…</p>
+      <div class="sort" role="group" aria-label="Sort">
+        <span>Sort</span>
+        <button type="button" class="chip on" data-sort="new">Newest</button>
+        <button type="button" class="chip" data-sort="old">Oldest</button>
+      </div>
+    </div>
+    <div class="active" id="active" hidden></div>
+    <div id="list" style="display:flex;flex-direction:column;gap:20px"></div>
+    <button type="button" class="loadmore" id="loadmore" hidden>Show more episodes</button>
+  </section>
+</main>
+<footer><div class="wrap"><p>Art is Change is a podcast from the Center for the Study of Art &amp; Community, hosted by Bill Cleveland. New episodes are added every Wednesday.</p></div></footer>
+
+<script>
+(function () {
+  var FACETS = [
+    ['issues', 'Issues and goals'], ['discipline', 'Discipline'], ['settings', 'Settings and communities'],
+    ['approaches', 'Approaches and practices'], ['series', 'Series'], ['type', 'Episode type']
+  ];
+  var LABEL = { guest: 'Guest' };
+  FACETS.forEach(function (f) { LABEL[f[0]] = f[1]; });
+  var QUICK = [['issues', 'Democracy and civic life'], ['issues', 'Racial justice'], ['issues', 'Community development'],
+    ['discipline', 'Poetry and spoken word'], ['discipline', 'Theater and performance'], ['approaches', 'Cultural organizing']];
+  var PAGE = 20, MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var EPS = [], GUESTS = {};
+  var st = { q: '', sel: [], mode: 'all', sort: 'new', shown: PAGE, open: {} };
+
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function key(k, v) { return k + '\u0001' + v; }
+  function isSel(k, v) { return st.sel.indexOf(key(k, v)) >= 0; }
+  function toggle(k, v) { var x = key(k, v), i = st.sel.indexOf(x); if (i >= 0) st.sel.splice(i, 1); else st.sel.push(x); st.shown = PAGE; render(); }
+  function vals(e, k) { return k === 'guest' ? e.guests : (e[k] || []); }
+  function fmtDate(d) { if (!d) return ''; var p = d.split('-'); return MONTHS[+p[1] - 1] + ' ' + (+p[2]) + ', ' + p[0]; }
+  function initials(n) { var w = n.replace(/[^A-Za-zÀ-ÿ ]/g, '').split(' ').filter(Boolean); return w.length ? (w[0][0] + (w.length > 1 ? w[w.length - 1][0] : '')).toUpperCase() : '?'; }
+  function fold(s) { return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+
+  function compute() {
+    var words = fold(st.q).split(/\s+/).filter(Boolean);
+    var base = EPS.filter(function (e) { return words.every(function (w) { return e._hay.indexOf(w) >= 0; }); });
+    var has = function (e, x) { var i = x.indexOf('\u0001'); return vals(e, x.slice(0, i)).indexOf(x.slice(i + 1)) >= 0; };
+    var res = base.filter(function (e) {
+      if (!st.sel.length) return true;
+      return st.mode === 'any' ? st.sel.some(function (x) { return has(e, x); }) : st.sel.every(function (x) { return has(e, x); });
+    });
+    res.sort(function (a, b) { return st.sort === 'new' ? (a.date < b.date ? 1 : -1) : (a.date > b.date ? 1 : -1); });
+    return { base: base, res: res };
+  }
+
+  function renderFacets(pool) {
+    var html = '';
+    FACETS.forEach(function (f) {
+      var counts = {};
+      pool.forEach(function (e) { vals(e, f[0]).forEach(function (v) { counts[v] = (counts[v] || 0) + 1; }); });
+      st.sel.forEach(function (x) { var i = x.indexOf('\u0001'); if (x.slice(0, i) === f[0] && !counts[x.slice(i + 1)]) counts[x.slice(i + 1)] = 0; });
+      var names = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a] || a.localeCompare(b); });
+      if (!names.length) return;
+      var lim = st.open[f[0]] ? names.length : 8;
+      html += '<section><h2>' + esc(f[1]) + '</h2>';
+      names.slice(0, lim).forEach(function (v) {
+        html += '<button type="button" class="fopt' + (isSel(f[0], v) ? ' on' : '') + '" data-k="' + f[0] + '" data-v="' + esc(v) + '" aria-pressed="' + isSel(f[0], v) + '"><span>' + esc(v) + '</span><small>' + counts[v] + '</small></button>';
+      });
+      if (names.length > 8) html += '<button type="button" class="showall" data-open="' + f[0] + '">' + (st.open[f[0]] ? 'Show fewer' : 'Show all ' + names.length) + '</button>';
+      html += '</section>';
+    });
+    $('facets').innerHTML = html;
+  }
+
+  function card(e) {
+    var meta = '<strong>' + (e.no ? 'Episode ' + esc(e.no) : 'Bonus episode') + '</strong><span>' + fmtDate(e.date) + '</span>' + (e.length ? '<span>' + esc(e.length) + '</span>' : '');
+    e.series.forEach(function (s) { meta += '<em>' + esc(s) + '</em>'; });
+    var g = e.guests.map(function (n) {
+      var info = GUESTS[n] || { bio: '', n: 1 };
+      return '<div class="guest"><div class="av" aria-hidden="true">' + esc(initials(n)) + '</div><div style="display:flex;flex-direction:column;gap:2px;min-width:0">' +
+        '<span class="gname">' + esc(n) + '</span>' + (info.bio ? '<span class="gbio">' + esc(info.bio) + '</span>' : '') +
+        (info.n > 1 ? '<button type="button" class="more" data-guest="' + esc(n) + '">All ' + info.n + ' episodes with ' + esc(n) + ' →</button>' : '') + '</div></div>';
+    }).join('');
+    var tags = '';
+    ['issues', 'discipline', 'settings', 'approaches'].forEach(function (k) {
+      e[k].forEach(function (v) { tags += '<button type="button" class="tag' + (isSel(k, v) ? ' on' : '') + '" data-k="' + k + '" data-v="' + esc(v) + '">' + esc(v) + '</button>'; });
+    });
+    return '<article><div class="meta">' + meta + '</div><h3>' + esc(e.title) + '</h3>' +
+      (g ? '<div style="display:flex;flex-direction:column;gap:12px">' + g + '</div>' : '') +
+      '<p class="summary">' + esc(e.summary) + '</p>' + (tags ? '<div class="tags">' + tags + '</div>' : '') +
+      '<div class="foot"><span class="places">' + esc(e.places.join(' · ')) + '</span>' +
+      (e.link ? '<a class="listen" href="' + esc(e.link) + '" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg>Listen<span class="sr"> to ' + esc(e.title) + '</span></a>' : '') +
+      '</div></article>';
+  }
+
+  function render() {
+    var c = compute();
+    renderFacets(st.mode === 'any' ? c.base : c.res);
+    $('count').textContent = c.res.length === 1 ? '1 episode' : c.res.length + ' episodes';
+    var act = $('active');
+    if (st.sel.length) {
+      var chips = st.sel.map(function (x) { var i = x.indexOf('\u0001'), k = x.slice(0, i), v = x.slice(i + 1);
+        return '<button type="button" class="chip on" data-k="' + k + '" data-v="' + esc(v) + '" aria-label="Remove filter ' + esc(v) + '">' + (k === 'guest' ? 'Guest: ' : '') + esc(v) + ' ✕</button>'; }).join('');
+      act.innerHTML = '<div class="row" role="group" aria-label="How to combine filters"><b>Match</b>' +
+        '<button type="button" class="chip' + (st.mode === 'all' ? ' on' : '') + '" data-mode="all">All filters</button>' +
+        '<button type="button" class="chip' + (st.mode === 'any' ? ' on' : '') + '" data-mode="any">Any filter</button></div>' +
+        '<div class="row"><span class="lead">Showing episodes with ' + (st.mode === 'any' ? 'ANY' : 'ALL') + ' of these:</span>' + chips +
+        '<button type="button" class="clear" data-clear="1">Clear all</button></div>';
+      act.hidden = false;
+    } else { act.hidden = true; act.innerHTML = ''; }
+    $('list').innerHTML = c.res.length ? c.res.slice(0, st.shown).map(card).join('') :
+      '<div class="empty"><p>No episodes match all of those choices</p><button type="button" class="chip" data-clear="1">Clear search and filters</button></div>';
+    var lm = $('loadmore'); lm.hidden = c.res.length <= st.shown;
+    lm.textContent = 'Show more episodes (' + (c.res.length - st.shown) + ' more)';
+    document.querySelectorAll('#quick .chip').forEach(function (b) { b.classList.toggle('on', isSel(b.dataset.k, b.dataset.v)); });
+    document.querySelectorAll('[data-sort]').forEach(function (b) { b.classList.toggle('on', b.dataset.sort === st.sort); });
+  }
+
+  document.addEventListener('click', function (ev) {
+    var b = ev.target.closest('button'); if (!b) return;
+    var d = b.dataset;
+    if (d.k) toggle(d.k, d.v);
+    else if (d.guest) { st.sel = [key('guest', d.guest)]; st.q = ''; $('q').value = ''; st.shown = PAGE; render(); $('count').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    else if (d.mode) { st.mode = d.mode; st.shown = PAGE; render(); }
+    else if (d.sort) { st.sort = d.sort; render(); }
+    else if (d.open) { st.open[d.open] = !st.open[d.open]; render(); }
+    else if (d.clear) { st.sel = []; st.q = ''; $('q').value = ''; st.shown = PAGE; render(); }
+    else if (b.id === 'ftoggle') { var a = $('facets'), open = a.classList.toggle('closed') === false; b.setAttribute('aria-expanded', open); b.textContent = open ? 'Hide filters' : 'Show filters'; }
+    else if (b.id === 'loadmore') { st.shown += PAGE; render(); }
+  });
+  var t;
+  $('q').addEventListener('input', function (ev) { clearTimeout(t); t = setTimeout(function () { st.q = ev.target.value; st.shown = PAGE; render(); }, 120); });
+
+  $('quick').insertAdjacentHTML('beforeend', QUICK.map(function (c) { return '<button type="button" class="chip" data-k="' + c[0] + '" data-v="' + esc(c[1]) + '">' + esc(c[1]) + '</button>'; }).join(''));
+
+  fetch('episodes.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) {
+    GUESTS = d.guests || {};
+    EPS = d.episodes.map(function (e) {
+      e._hay = fold([e.title, e.summary, e.no, e.guests.join(' '), e.people.join(' '), e.orgs.join(' '), e.places.join(' '), e.series.join(' '), e.ideas.join(' ')]
+        .concat(e.discipline, e.issues, e.settings, e.approaches).join(' '));
+      return e;
+    });
+    $('headline').textContent = 'Search ' + EPS.length + ' conversations about art and social change';
+    render();
+  }).catch(function () { $('count').textContent = 'Sorry, the episode list could not be loaded. Please refresh the page.'; });
+})();
+</script>
+</body>
+</html>
