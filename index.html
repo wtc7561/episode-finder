@@ -94,7 +94,7 @@ footer p{margin:0;font-size:14px;line-height:1.5;color:var(--grey)}
         <input id="q" type="search" autocomplete="off" placeholder="Try “poetry”, “Minneapolis” or “Liz Lerman”">
       </div>
     </div>
-    <div class="quick" id="quick"><span>Popular:</span></div>
+    <div class="quick" id="quick"><span>Browse a collection:</span></div>
   </div>
 </header>
 <main class="wrap">
@@ -118,14 +118,35 @@ footer p{margin:0;font-size:14px;line-height:1.5;color:var(--grey)}
 
 <script>
 (function () {
+  // Bill's 12 curated collections, each defined by the evidence-based tags an episode carries.
+  var COLLECTIONS = [
+    ['justice arts', 'How the arts are making a difference in the lives of the incarcerated.', {issues: ['Criminal justice and incarceration', 'Reentry after incarceration'], settings: ['Prisons and jails', 'Juvenile justice']}],
+    ['children & youth', 'The arts give young people a powerful voice to assert their uniqueness and link to others.', {issues: ['Youth development'], settings: ['Youth', 'K-12 schools', 'Juvenile justice']}],
+    ['racial reckoning', 'For those seeking to reduce racial injustice and conflict: the arts are our most dangerously neglected natural resource.', {issues: ['Racial justice']}],
+    ['creative climate action', 'Artists have been at the center of the environmental and climate justice movement from its beginnings.', {issues: ['Environment and climate']}],
+    ['cultural organizing', 'The whys and hows of many different approaches to culturally based community organizing.', {approaches: ['Cultural organizing']}],
+    ['training', 'Can effective creative change practice be learned? One of many questions touched on in these stories.', {approaches: ['Teaching Artists', 'Arts education'], issues: ['Education']}],
+    ['arts & healing', 'The arts are a proven strategy for healing, prevention and empowerment.', {issues: ['Health and healing', 'Trauma and mental health'], settings: ['Hospitals and health care', 'Senior and memory care'], approaches: ['Arts in health and arts on prescription']}],
+    ['art of the rural', 'Rural culture as a unique laboratory for learning about the transformative power of the arts in community life.', {issues: ['Rural life and economy'], settings: ['Rural towns']}],
+    ['theater', 'Theater provides safe space to join in giving voice to joyous, illuminating and, yes, even dangerous things.', {discipline: ['Theater and performance'], approaches: ['Verbatim and documentary theater', 'Theatre of the Oppressed']}],
+    ['music', 'Scratch the surface of a successful movement for change and you will find music.', {discipline: ['Music and song']}],
+    ['change media', 'Stories of artists putting the enormous power of media to good use.', {discipline: ['Film and video', 'Media arts']}],
+    ['cultural democracy', 'Democracy is the art of collective story making: stories of the world\u2019s most challenging imaginative practice.', {issues: ['Democracy and civic life'], approaches: ['Public dialogue and civic convenings']}]
+  ];
+  var COLL_DESC = {};
+  COLLECTIONS.forEach(function (c) { COLL_DESC[c[0]] = c[1]; });
+  function collectionsOf(e) {
+    return COLLECTIONS.filter(function (c) {
+      return Object.keys(c[2]).some(function (k) { return c[2][k].some(function (t) { return (e[k] || []).indexOf(t) >= 0; }); });
+    }).map(function (c) { return c[0]; });
+  }
   var FACETS = [
-    ['issues', 'Issues and goals'], ['discipline', 'Discipline'], ['settings', 'Settings and communities'],
+    ['collections', 'Collections'], ['issues', 'Issues and goals'], ['discipline', 'Discipline'], ['settings', 'Settings and communities'],
     ['approaches', 'Approaches and practices'], ['series', 'Series'], ['type', 'Episode type']
   ];
   var LABEL = { guest: 'Guest' };
   FACETS.forEach(function (f) { LABEL[f[0]] = f[1]; });
-  var QUICK = [['issues', 'Democracy and civic life'], ['issues', 'Racial justice'], ['issues', 'Community development'],
-    ['discipline', 'Poetry and spoken word'], ['discipline', 'Theater and performance'], ['approaches', 'Cultural organizing']];
+  var QUICK = COLLECTIONS.map(function (c) { return ['collections', c[0]]; });
   var PAGE = 20, MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   var EPS = [], GUESTS = {};
   var st = { q: '', sel: [], mode: 'all', sort: 'new', shown: PAGE, open: {} };
@@ -181,7 +202,7 @@ footer p{margin:0;font-size:14px;line-height:1.5;color:var(--grey)}
         (info.n > 1 ? '<button type="button" class="more" data-guest="' + esc(n) + '">All ' + info.n + ' episodes with ' + esc(n) + ' →</button>' : '') + '</div></div>';
     }).join('');
     var tags = '';
-    ['issues', 'discipline', 'settings', 'approaches'].forEach(function (k) {
+    ['collections', 'issues', 'discipline', 'settings', 'approaches'].forEach(function (k) {
       e[k].forEach(function (v) { tags += '<button type="button" class="tag' + (isSel(k, v) ? ' on' : '') + '" data-k="' + k + '" data-v="' + esc(v) + '">' + esc(v) + '</button>'; });
     });
     return '<article><div class="meta">' + meta + '</div><h3>' + esc(e.title) + '</h3>' +
@@ -190,6 +211,11 @@ footer p{margin:0;font-size:14px;line-height:1.5;color:var(--grey)}
       '<div class="foot"><span class="places">' + esc(e.places.join(' · ')) + '</span>' +
       (e.link ? '<a class="listen" href="' + esc(e.link) + '" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg>Listen<span class="sr"> to ' + esc(e.title) + '</span></a>' : '') +
       '</div></article>';
+  }
+
+  function collNote() {
+    var cs = st.sel.filter(function (x) { return x.indexOf('collections\u0001') === 0; }).map(function (x) { return x.slice(12); });
+    return cs.map(function (c) { return '<p style="margin:0;font-size:15px;line-height:1.5"><strong>' + esc(c) + ':</strong> ' + esc(COLL_DESC[c] || '') + '</p>'; }).join('');
   }
 
   function render() {
@@ -204,7 +230,7 @@ footer p{margin:0;font-size:14px;line-height:1.5;color:var(--grey)}
         '<button type="button" class="chip' + (st.mode === 'all' ? ' on' : '') + '" data-mode="all">All filters</button>' +
         '<button type="button" class="chip' + (st.mode === 'any' ? ' on' : '') + '" data-mode="any">Any filter</button></div>' +
         '<div class="row"><span class="lead">Showing episodes with ' + (st.mode === 'any' ? 'ANY' : 'ALL') + ' of these:</span>' + chips +
-        '<button type="button" class="clear" data-clear="1">Clear all</button></div>';
+        '<button type="button" class="clear" data-clear="1">Clear all</button></div>' + collNote();
       act.hidden = false;
     } else { act.hidden = true; act.innerHTML = ''; }
     $('list').innerHTML = c.res.length ? c.res.slice(0, st.shown).map(card).join('') :
@@ -237,6 +263,7 @@ footer p{margin:0;font-size:14px;line-height:1.5;color:var(--grey)}
     EPS = d.episodes.map(function (e) {
       e._hay = fold([e.title, e.summary, e.no, e.guests.join(' '), e.people.join(' '), e.orgs.join(' '), e.places.join(' '), e.series.join(' '), e.ideas.join(' ')]
         .concat(e.discipline, e.issues, e.settings, e.approaches).join(' '));
+      e.collections = collectionsOf(e);
       return e;
     });
     $('headline').textContent = 'Search ' + EPS.length + ' conversations about art and social change';
